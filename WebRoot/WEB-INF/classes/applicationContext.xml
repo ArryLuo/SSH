@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver">
+		</property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl">
+		</property>
+		<property name="username" value="scott"></property>
+		<property name="password" value="tiger"></property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.Oracle9Dialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>com/shandian/bean/Emp.hbm.xml</value>
+				<value>com/shandian/bean/Dept.hbm.xml</value>
+				<value>com/shandian/bean/Users.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	<!-- 用户的登录 -->
+	<bean id="userdao" class="com.shandian.dao.impl.UserInfoDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 员工emp -->
+	<bean id="empdao" class="com.shandian.dao.impl.EmpDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- 部门 -->
+	<bean id="deptdao" class="com.shandian.dao.impl.DeptDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="service" class="com.shandian.service.impl.ServiceImpl">
+		<property name="dao" ref="userdao"></property>
+	</bean>
+	<bean id="empservice" class="com.shandian.service.impl.EmpServiceImpl">
+		<property name="empDao" ref="empdao"></property>
+	</bean>
+	<bean id="deptService" class="com.shandian.service.impl.DeptServiceImple">
+		<property name="deptDao" ref="deptdao"></property>
+	</bean>
+	<!--scope="prototype"默认不写就是单例，写的话是多例 -->
+	<bean id="userAction" class="com.shandian.action.UserAction"
+		scope="prototype">
+		<property name="service" ref="service"></property>
+	</bean>
+	<bean id="empAction" class="com.shandian.action.EmpAction" scope="prototype">
+		<property name="deptService" ref="deptService"></property>
+		<property name="empService" ref="empservice"></property>
+	</bean>
+	<bean id="deptAction" class="com.shandian.action.DeptAction" scope="prototype">
+		<property name="deptService" ref="deptService"></property>
+	</bean>
+	
+	<!-- 使用声明式事务 -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="getAll*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="update*" read-only="false" propagation="REQUIRED" />
+			<tx:method name="del*" read-only="false" propagation="REQUIRED" />
+			<tx:method name="add*" read-only="false" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 切面的配置项 -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.shandian.service.*.*(..))" />
+	</aop:config>
+</beans>

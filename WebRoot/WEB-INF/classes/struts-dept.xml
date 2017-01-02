@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN" "struts-2.1.7.dtd" >
+<struts>
+	<package name="dept" namespace="/" extends="struts-default">
+		<action name="dept_*" class="deptAction" method="{1}">
+			<result name="toquery">/WEB-INF/deptlist.jsp</result>
+			<result name="adduid">/WEB-INF/daptadd.jsp</result>
+			<result name="query" type="redirectAction">dept_queryAll.action</result>
+			<result name="updateui">/WEB-INF/deptupdate.jsp</result>
+		</action>
+	</package>
+</struts>

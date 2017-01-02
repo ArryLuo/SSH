@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN" "struts-2.1.7.dtd" >
+<struts>
+	<package name="emp" namespace="/" extends="struts-default">
+		<action name="emp_*" class="empAction" method="{1}">
+			<result name="toquery">/WEB-INF/list.jsp</result>
+			<result name="addui">/WEB-INF/add.jsp</result>
+			<result name="query" type="redirectAction">emp_queryAll.action</result>
+			<result name="updateui">/WEB-INF/empupdate.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN" "struts-2.1.7.dtd" >
+<struts>
+	<!--用户的Struts -->
+	<include file="struts-user.xml"></include>
+	<include file="struts-emp.xml"></include>
+	<include file="struts-dept.xml"></include>
+</struts>

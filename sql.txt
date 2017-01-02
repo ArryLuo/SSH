@@ -1,0 +1,10 @@
+create table users
+	(
+	id integer primary key,
+	u_name varchar(20),
+	pwd varchar(20),
+	sex varchar(20),
+	content varchar(50)
+)
+
+//部门和员工的是在Scott用户登录的，并且users表也在Scott账户下登录的；
